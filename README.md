@@ -76,3 +76,9 @@ As Mingle continues to grow, here are a few planned updates and optimizations fo
   * Add a filter to prevent the game from selecting users who have a blank "Interests" field as the mystery coworker.
 * **UI/UX Navigation:** Reorganize the sidebar menu to group the app's features into distinct categories, cleanly separating "Fun & Games" (e.g., Guess Who, Caption This) from "Team/Business Activities" (e.g., User Manual, Skill Shop, Kudos).
 
+---
+
+## 💡 Want to see how this app was built? 
+Check out the [Project Development Log ](Porject_Development_Log.pdf). <br />
+It includes a step by step breakdown of my development methodology, the challenges I overcame (like optimizing Streamlit's UI limitations), and the exact AI prompts I used to generate features, integrate APIs, and set up the CI/CD pipeline."
+
