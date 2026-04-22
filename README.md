@@ -73,7 +73,7 @@ As Mingle continues to grow, here are a few planned updates and optimizations fo
 * **Data Storage Optimization:** Transition the database format from an Excel file (`.xlsx`) to a CSV file (`.csv`) for faster read/write speeds and easier version control.
 * **Enhanced "Guess Who" Logic:** 
   * Update the game algorithm to account for shared interests. Currently, if multiple coworkers have the exact same interest, the game only accepts the specific person it randomly selected in the background.
-  * Add a filter to prevent the game from selecting users who have a blank "Interests" field as the mystery coworker.
+  * Add a filter to prevent the game from selecting the active user as the mystery coworker, ensuring no one is prompted to guess their own interests.
 * **UI/UX Navigation:** Reorganize the sidebar menu to group the app's features into distinct categories, cleanly separating "Fun & Games" (e.g., Guess Who, Caption This) from "Team/Business Activities" (e.g., User Manual, Skill Shop, Kudos).
 
 ---
