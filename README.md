@@ -79,6 +79,6 @@ As Mingle continues to grow, here are a few planned updates and optimizations fo
 ---
 
 ## 💡 Want to see how this app was built? 
-Check out the [Project Development Log ](Porject_Development_Log.pdf). <br />
+Check out the [Project Development Log ](Project_Development_Log.pdf). <br />
 It includes a step by step breakdown of my development methodology, the challenges I overcame (like optimizing Streamlit's UI limitations), and the exact AI prompts I used to generate features, integrate APIs, and set up the CI/CD pipeline."
 
