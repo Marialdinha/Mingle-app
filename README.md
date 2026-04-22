@@ -44,3 +44,15 @@ If you want to run this application on your own computer, follow these steps:
 ```bash
 git clone https://github.com/Marialdinha/Mingle-app.git
 cd Mingle-app
+```
+
+**2. Install the required dependencies**
+<br /> Make sure you have Python installed, then run:
+```bash
+pip install -r requirements.txt
+```
+
+**3. Run the Streamlit app**
+```bash
+streamlit run Mingle.py
+```
