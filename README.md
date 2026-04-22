@@ -56,3 +56,10 @@ pip install -r requirements.txt
 ```bash
 streamlit run Mingle.py
 ```
+
+---
+
+## 🚀 How to Run on the web
+To use the application directly in your browser without any installation, visit the live app here: <br /> <br /> 
+[Mingle Web App](https://mingle-app-xykjfsuvyvepqjakxcljfd.streamlit.app/)
+
