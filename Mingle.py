@@ -186,6 +186,7 @@ def show_Profile_page(df, st_first_name):
         
         #Message to user
         st.success("You can start mingling.")
+        st.markdown("### 👈 Select an activity from the sidebar to get started!")
 
         if st.button("Change User"):
             # Delete everything in the session state
@@ -226,6 +227,7 @@ def show_Profile_page(df, st_first_name):
 
                     #Message to user
                     st.success("We know who you are! You can start mingling.")
+                    st.markdown("### 👈 Select an activity from the sidebar to get started!")
 
                     
                 else:
@@ -246,13 +248,14 @@ def show_Profile_page(df, st_first_name):
                         
                         #Message to user
                         st.success("Now, We are acquainted! You can start mingling.")
+                        st.markdown("### 👈 Select an activity from the sidebar to get started!")
                                 
                 
 #-----
 # Guess Who Page
 #-----
 def show_Guess_Who_page(df, st_first_name):
-    st.title(f"{st_first_name.capitalize()}, Guess Who Your Co-Worker is 🕵️‍♀️")
+    st.title(f"{st_first_name.capitalize()}, Guess Who 🕵️‍♀️")
 
     # We need at least 2 people in the Excel file to play a guessing game!
     if len(df) < 2:
@@ -296,7 +299,7 @@ def show_Guess_Who_page(df, st_first_name):
 #Would You Rather Page
 #-----
 def show_Would_You_Rather_page(df, st_first_name, st_last_name):
-    st.title(f"Would You Rather, {st_first_name.title()}? 🤔")
+    st.title(f"{st_first_name.title()}, Would You Rather? 🤔")
     
     question = "Would you rather work from a beach 🏖️ or a mountain cabin 🏔️?"
     st.write(f"### {question}")
@@ -407,7 +410,7 @@ def show_Spin_The_Wheel_page(st_first_name):
 # Kudos page
 #-----
 def show_Kudos_page(df, st_first_name, st_last_name):
-    st.title("Wall of Fame: Give Kudos! 🌟")
+    st.title(f"Wall of Fame: Give Kudos, {st_first_name.title()}! 🌟")
     st.write("Show some appreciation! Send a Kudo to a coworker who helped you out or did an awesome job.")
 
     # 1. Clean up the Kudos column so we can do math on it
@@ -505,7 +508,7 @@ def show_Skill_Shop_page(df, st_first_name, st_last_name):
     st.divider()
     
     # --- SECTION 1: ADD / UPDATE YOUR SKILL ---
-    st.subheader("Your Offered Skill")
+    st.subheader(f"{st_first_name.title()}, Your Offered Skill")
     
     if not has_skill:
         st.info("You haven't listed a skill yet. What's something you're good at that you could teach a coworker?")
@@ -549,10 +552,10 @@ def show_Skill_Shop_page(df, st_first_name, st_last_name):
     
     # Filter the dataframe to only include people who have listed a skill
     # We use a lambda function to check that the skill is not empty and not "nan"
-    shop_df = shop_df[~((shop_df['First Name'] == st_first_name.lower()) & (shop_df['Last Name'] == st_last_name.lower()))]
+    shop_df = df[df['Skill'].apply(lambda x: pd.notna(x) and str(x).strip().lower() not in ["", "nan"])]
     
     # Filter out the current user so they don't see their own skill in the shop
-    shop_df = shop_df[(shop_df['First Name'] != st_first_name.lower()) | (shop_df['Last Name'] != st_last_name.lower())]
+    shop_df = shop_df[~((shop_df['First Name'] == st_first_name.lower()) & (shop_df['Last Name'] == st_last_name.lower()))]
     
     if shop_df.empty:
         st.info("The shop is currently empty. Be the first to offer a skill, or invite your coworkers to add theirs!")
@@ -589,7 +592,7 @@ def show_Skill_Shop_page(df, st_first_name, st_last_name):
 # Caption This Page (Using an API!)
 #-----
 def show_Caption_This_page(st_first_name):
-    st.title("Caption This! 📸")
+    st.title(f"Caption This, {st_first_name.title()}! 📸")
     st.write(f"Hey {st_first_name.title()}, take a quick brain break! Fetch a random photo and give it your best meme caption.")
 
     # 1. Initialize session state to remember the image so it doesn't disappear
@@ -637,7 +640,7 @@ def show_Caption_This_page(st_first_name):
 # Two truths and a lie page
 #-----
 def show_Two_truths_and_a_lie_page(df, st_first_name, st_last_name):
-    st.title("Two Truths and a Lie 🤥")
+    st.title(f"{st_first_name.title()}, Two Truths and a Lie 🤥")
     st.write("Can you spot the fake? Set up your own statements, then try to guess the lies of your coworkers!")
 
     # 1. Find the current user's record
@@ -753,7 +756,7 @@ def show_Two_truths_and_a_lie_page(df, st_first_name, st_last_name):
 # User Manual Profile Page
 #-----
 def show_User_Manual_Profile_page(df, st_first_name, st_last_name):
-    st.title("User Manual 📖")
+    st.title(f"User Manual, {st_first_name.title()} 📖")
     st.write("A 'User Manual' helps coworkers understand how best to work with you. Fill out your manual and search for others to learn their working styles!")
 
     # 1. Find the current user's record
