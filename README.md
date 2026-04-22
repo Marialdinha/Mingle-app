@@ -1,2 +1,2 @@
 # Mingle-app
-This application helps team members get to know each other and connect.
+This application is designed to foster meaningful connections and build rapport among team members.
