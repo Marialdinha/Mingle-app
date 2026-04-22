@@ -21,7 +21,9 @@ EXPECTED_COLUMNS = ["First Name", "Last Name", "Interests","Kudos", "Would You R
 # ==========================================
 # STATE MANAGEMENT
 # ==========================================
-# Initializing session state variables 
+#-----
+# Initializing session state variables
+#-----
 def initializing_session():
     if 'user_profile' not in st.session_state:
         st.session_state.user_profile = {
@@ -30,8 +32,10 @@ def initializing_session():
             'interests': [],
             'is_setup': False
     }
-    
+
+#-----
 # Updating session state variables when a user is found or new record is created
+#-----
 def update_session(first_name, last_name, interests):
     # Update the session state with the new values
     st.session_state.user_profile['first_name'] = first_name
@@ -42,7 +46,9 @@ def update_session(first_name, last_name, interests):
 # ==========================================
 # DATA HANDLING 
 # ==========================================
+#-----
 # Retriving data from excel file
+#-----
 def load_data():
     # Check if the file exists first
     if os.path.exists(EXCEL_FILE):
@@ -67,7 +73,9 @@ def load_data():
         return pd.DataFrame(columns=EXPECTED_COLUMNS)
 
 
+#-----
 # Saving new user to excel spreadsheet
+#-----
 def append_to_excel(df, first_name, last_name, interests):
     # Create a dictionary with the new row of data
     new_user_data = {
@@ -95,7 +103,9 @@ def append_to_excel(df, first_name, last_name, interests):
     updated_df.to_excel('mingle_users.xlsx', index=False)
 
 
+#-----
 # Updating an existing user's record in the excel spreadsheet
+#-----
 def update_excel_record(df, first_name, last_name, column_name, new_value):
     # Find the row index for the current user
     user_idx = df[(df['First Name'] == first_name.strip().lower()) & 
@@ -114,17 +124,30 @@ def update_excel_record(df, first_name, last_name, column_name, new_value):
 # HELPER FUNCTIONS
 # ==========================================
 
+#-----
 # Helper function to set up a new round of the game Guess Who
+#-----
 def init_guess_who(df):
+
+    # FILTER: Only include people who actually have text in their Interests column
+    users_with_interests = df[df['Interests'].apply(
+        lambda x: pd.notna(x) and str(x).strip() != "" and str(x).strip().lower() != "nan"
+    )]
+    
+    # Safety check: If no one has interests, stop here so the app doesn't crash
+    if users_with_interests.empty:
+        st.session_state.guess_who_state = None
+        return
+    
     # Pick 1 random row to be the mystery coworker
-    mystery_row = df.sample(1).iloc[0]
+    mystery_row = users_with_interests.sample(1).iloc[0]
     
     # Format their name nicely (e.g., "marialda cabral" -> "Marialda Cabral")
     correct_name = f"{mystery_row['First Name'].title()} {mystery_row['Last Name'].title()}"
     
     # Find other users to act as wrong answers (distractors)
     # Filter out the mystery person so they aren't in the distractor list
-    other_users = df[(df['First Name'] != mystery_row['First Name']) | (df['Last Name'] != mystery_row['Last Name'])]
+    other_users = df[~((df['First Name'] == mystery_row['First Name']) & (df['Last Name'] == mystery_row['Last Name']))]
     
     distractors = []
     if not other_users.empty:
@@ -151,7 +174,9 @@ def init_guess_who(df):
 # PAGE VIEWS 
 # ==========================================
 
+#-----
 #Profile Page
+#-----
 def show_Profile_page(df, st_first_name):
     
 
@@ -223,8 +248,9 @@ def show_Profile_page(df, st_first_name):
                         st.success("Now, We are acquainted! You can start mingling.")
                                 
                 
-
+#-----
 # Guess Who Page
+#-----
 def show_Guess_Who_page(df, st_first_name):
     st.title(f"{st_first_name.capitalize()}, Guess Who Your Co-Worker is 🕵️‍♀️")
 
@@ -253,7 +279,7 @@ def show_Guess_Who_page(df, st_first_name):
             st.rerun()         # Refresh the page
     else:
         # Show the multiple choice options
-        guess = st.radio("Select the coworker:", state['options'], index=0)
+        guess = st.radio("Select the coworker:", state['options'], index=None)
         
         if st.button("Submit Guess"):
             if guess == state['correct_name']:
@@ -264,9 +290,11 @@ def show_Guess_Who_page(df, st_first_name):
             else:
                 # They got it wrong
                 st.error("Oops! That's not correct. Try again!")
-                
 
+                
+#-----
 #Would You Rather Page
+#-----
 def show_Would_You_Rather_page(df, st_first_name, st_last_name):
     st.title(f"Would You Rather, {st_first_name.title()}? 🤔")
     
@@ -334,7 +362,9 @@ def show_Would_You_Rather_page(df, st_first_name, st_last_name):
                 st.write(f"• {row['First Name'].title()} {row['Last Name'].title()}")
 
 
+#-----
 #Spin The Wheel Page
+#-----
 def show_Spin_The_Wheel_page(st_first_name):
     st.title(f"Spin The Wheel, {st_first_name.title()}! 🎡")
     st.write("Need an icebreaker? Spin the wheel to get a random conversation topic for your next team meeting or coffee chat.")
@@ -372,7 +402,10 @@ def show_Spin_The_Wheel_page(st_first_name):
         # st.info creates a nice highlighted blue box
         st.info(f"#### {st.session_state.current_topic}")
 
+
+#-----
 # Kudos page
+#-----
 def show_Kudos_page(df, st_first_name, st_last_name):
     st.title("Wall of Fame: Give Kudos! 🌟")
     st.write("Show some appreciation! Send a Kudo to a coworker who helped you out or did an awesome job.")
@@ -382,7 +415,7 @@ def show_Kudos_page(df, st_first_name, st_last_name):
     df['Kudos'] = pd.to_numeric(df['Kudos'], errors='coerce').fillna(0).astype(int)
 
     # 2. Filter out the current user (you can't give yourself a Kudo!)
-    other_users = df[(df['First Name'] != st_first_name.lower()) | (df['Last Name'] != st_last_name.lower())]
+    other_users = df[~((df['First Name'] == st_first_name.lower()) & (df['Last Name'] == st_last_name.lower()))]
 
     if other_users.empty:
         st.info("You are the only one here! Invite some coworkers to give them Kudos.")
@@ -450,7 +483,9 @@ def show_Kudos_page(df, st_first_name, st_last_name):
                 )
 
 
-# Skill Shop page        
+#-----
+# Skill Shop page
+#-----
 def show_Skill_Shop_page(df, st_first_name, st_last_name):
     st.title("Skill Shop 🛠️")
     st.write("Welcome to the Skill Shop! Share a skill you can teach others, or browse what your coworkers are offering.")
@@ -514,7 +549,7 @@ def show_Skill_Shop_page(df, st_first_name, st_last_name):
     
     # Filter the dataframe to only include people who have listed a skill
     # We use a lambda function to check that the skill is not empty and not "nan"
-    shop_df = df[df['Skill'].apply(lambda x: pd.notna(x) and str(x).strip().lower() not in ["", "nan"])]
+    shop_df = shop_df[~((shop_df['First Name'] == st_first_name.lower()) & (shop_df['Last Name'] == st_last_name.lower()))]
     
     # Filter out the current user so they don't see their own skill in the shop
     shop_df = shop_df[(shop_df['First Name'] != st_first_name.lower()) | (shop_df['Last Name'] != st_last_name.lower())]
@@ -549,8 +584,10 @@ def show_Skill_Shop_page(df, st_first_name, st_last_name):
                         st.markdown(f"**{name2}**")
                         st.write(f"🧠 Can teach: *{skill2}*")
 
-   
+
+#-----
 # Caption This Page (Using an API!)
+#-----
 def show_Caption_This_page(st_first_name):
     st.title("Caption This! 📸")
     st.write(f"Hey {st_first_name.title()}, take a quick brain break! Fetch a random photo and give it your best meme caption.")
@@ -595,8 +632,10 @@ def show_Caption_This_page(st_first_name):
             )
             st.balloons()
 
-            
+
+#-----
 # Two truths and a lie page
+#-----
 def show_Two_truths_and_a_lie_page(df, st_first_name, st_last_name):
     st.title("Two Truths and a Lie 🤥")
     st.write("Can you spot the fake? Set up your own statements, then try to guess the lies of your coworkers!")
@@ -710,8 +749,9 @@ def show_Two_truths_and_a_lie_page(df, st_first_name, st_last_name):
                         st.error("Nope, that one is true! Try again.")
 
 
-
+#-----
 # User Manual Profile Page
+#-----
 def show_User_Manual_Profile_page(df, st_first_name, st_last_name):
     st.title("User Manual 📖")
     st.write("A 'User Manual' helps coworkers understand how best to work with you. Fill out your manual and search for others to learn their working styles!")
@@ -763,7 +803,7 @@ def show_User_Manual_Profile_page(df, st_first_name, st_last_name):
     manual_df = df[df['User Manual'].apply(lambda x: pd.notna(x) and str(x).strip().lower() not in ["", "nan"])]
     
     # Filter out the current user (you don't need to search for your own manual)
-    manual_df = manual_df[(manual_df['First Name'] != st_first_name.lower()) | (manual_df['Last Name'] != st_last_name.lower())]
+    mmanual_df = manual_df[~((manual_df['First Name'] == st_first_name.lower()) & (manual_df['Last Name'] == st_last_name.lower()))]
     
     if manual_df.empty:
         st.info("No coworkers have filled out their User Manual yet. Be the first to set the trend!")
